@@ -1,11 +1,16 @@
 import { Session } from "@prisma/client";
 import { Session as ShopifySession } from "@shopify/shopify-api";
+import { ObjectId } from "mongodb"; // Import ObjectId for generating new IDs
 import prisma from "./prisma-connect";
+
 const apiKey = process.env.SHOPIFY_API_KEY || "";
 
 export async function storeSession(session: ShopifySession) {
+  // Ensure session.id is a valid ObjectID or create a new one
+  const sessionId = ObjectId.isValid(session.id) ? session.id : new ObjectId().toString();
+
   await prisma.session.upsert({
-    where: { id: session.id },
+    where: { id: sessionId }, // Use valid ObjectID
     update: {
       shop: session.shop,
       accessToken: session.accessToken,
@@ -16,7 +21,7 @@ export async function storeSession(session: ShopifySession) {
       apiKey,
     },
     create: {
-      id: session.id,
+      id: sessionId, // Use valid ObjectID
       shop: session.shop,
       accessToken: session.accessToken,
       scope: session.scope,
@@ -29,13 +34,13 @@ export async function storeSession(session: ShopifySession) {
 
   if (session.onlineAccessInfo) {
     const onlineAccessInfo = await prisma.onlineAccessInfo.upsert({
-      where: { sessionId: session.id },
+      where: { sessionId: sessionId }, // Ensure the correct sessionId is used
       update: {
         expiresIn: session.onlineAccessInfo.expires_in,
         associatedUserScope: session.onlineAccessInfo.associated_user_scope,
       },
       create: {
-        sessionId: session.id,
+        sessionId: sessionId, // Ensure the correct sessionId is used
         expiresIn: session.onlineAccessInfo.expires_in,
         associatedUserScope: session.onlineAccessInfo.associated_user_scope,
       },
@@ -70,6 +75,11 @@ export async function storeSession(session: ShopifySession) {
 }
 
 export async function loadSession(id: string) {
+  // Validate the ObjectID before querying
+  if (!ObjectId.isValid(id)) {
+    throw new SessionNotFoundError();
+  }
+
   const session = await prisma.session.findUnique({
     where: { id },
   });
@@ -82,12 +92,23 @@ export async function loadSession(id: string) {
 }
 
 export async function deleteSession(id: string) {
+  // Validate the ObjectID before deletion
+  if (!ObjectId.isValid(id)) {
+    throw new SessionNotFoundError();
+  }
+
   await prisma.session.delete({
     where: { id },
   });
 }
 
 export async function deleteSessions(ids: string[]) {
+  // Validate all ObjectIDs before deletion
+  const invalidIds = ids.filter(id => !ObjectId.isValid(id));
+  if (invalidIds.length > 0) {
+    throw new SessionNotFoundError();
+  }
+
   await prisma.session.deleteMany({
     where: { id: { in: ids } },
   });

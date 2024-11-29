@@ -68,7 +68,6 @@ There are a couple environment variables you need to set up in order for the app
 
 ```bash
 DATABASE_URL= # database connection string - for connecting to prisma
-POSTGRES_PASSWORD= # optional database password - when running postgres db locally through docker
 ```
 
 The first two variables are automatically populated by the Shopify CLI.

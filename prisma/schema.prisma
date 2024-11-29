@@ -1,17 +1,18 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
-  provider = "postgresql" // other supported providers are: postgresql, mysql, sqlite, sqlserver, mongodb
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
+}
+
 model Session {
-  id               String            @id @default(uuid())
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
   accessToken      String?
   expires          DateTime?
   isOnline         Boolean
@@ -25,7 +26,7 @@ model Session {
 }
 
 model OnlineAccessInfo {
-  id                  String          @id @default(uuid())
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   session             Session?        @relation(fields: [sessionId], references: [id])
   sessionId           String?         @unique
   expiresIn           Int
@@ -36,7 +37,7 @@ model OnlineAccessInfo {
 }
 
 model AssociatedUser {
-  id                 String            @id @default(uuid())
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
   onlineAccessInfo   OnlineAccessInfo? @relation(fields: [onlineAccessInfoId], references: [id])
   onlineAccessInfoId String?           @unique
   createdAt          DateTime          @default(now())
@@ -49,4 +50,13 @@ model AssociatedUser {
   locale             String
   collaborator       Boolean
   emailVerified      Boolean
+}
+
+model EducationalPdfUpload {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String
+  fileName  String
+  fileType  String
+  fileUrl   String
+  uploadedAt DateTime @default(now())
 }

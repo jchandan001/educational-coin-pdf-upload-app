@@ -1,0 +1,82 @@
+<div class="support-charity-block">
+  <h2>{{ block.settings.custom_title | default: 'Support Our Charities' }}</h2>
+  
+  <p>
+    <strong>{{ block.settings.brand_name | default: 'Our Brand' }}</strong> believes in a better world for all. 
+    <span>{% if block.settings.amount_type == 'percentage' %}
+            {{ block.settings.amount }}%
+          {% else %}
+            ${{ block.settings.amount }}
+          {% endif %}
+    </span>
+    from each sale goes to these organizations. Our customers can make their choice post-checkout.
+  </p>
+  
+<div class="charity-logos">
+  <a href="https://app.littlephil.org/charity/5e13dedd63b8260f90be500e" target="_blank">
+    <img src="{{ 'https://little-phil-prod.s3.amazonaws.com/charity/img/a38ada41-438d-4dcd-8581-75baea243ec2' }}" alt="Greenpeace" loading="lazy" width="100" height="100">
+  </a>
+  <a href="https://app.littlephil.org/campaign/5c5cef1e21265a001534f4a4" target="_blank">
+    <img src="{{ 'https://little-phil-prod.s3.ap-southeast-2.amazonaws.com/charity/img/61f32c8a-c6ed-4d98-abb7-8dfcb68a6fdf' }}" alt="Livin" loading="lazy" width="100" height="100">
+  </a>
+  <a href="https://app.littlephil.org/campaign/save-wildlife" target="_blank">
+    <img src="{{ 'https://little-phil-prod.s3.ap-southeast-2.amazonaws.com/charity/img/11ae400e-be37-42a6-9c87-b6aef6bcd511' }}" alt="Currumbin Wildlife Hospital" loading="lazy" width="100" height="100">
+  </a>
+</div>
+
+  
+  {% if block.settings.show_total_raised %}
+    <div class="total-raised">
+      <h3>Total Raised:</h3>
+      <p>{{ block.settings.total_raised | default: '$12,500' }}</p>
+    </div>
+  {% endif %}
+  
+  <div class="powered-by">
+    <small>
+      <a href="https://littlephil.org" target="_blank">
+        <img src="{{ 'https://cdn.prod.website-files.com/656f954bf8a2394642bc3cf2/6572444c68a428f17c124d06_Powered-By-Little-Phil.svg' }}" alt="Powered by Little Phil" loading="lazy" width="190" height="50">
+      </a>
+    </small>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Support & Charity",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "custom_title", "label": "Custom Title", "default": "Support Our Charities" },
+    { "type": "text", "id": "brand_name", "label": "Brand Name", "default": "Little Phill" },
+    { "type": "select", "id": "amount_type", "label": "Amount Type", "options": [{ "value": "percentage", "label": "Percentage" }, { "value": "fixed", "label": "Fixed Amount" }], "default": "percentage" },
+    { "type": "number", "id": "amount", "label": "Amount", "default": 5 },
+    { "type": "checkbox", "id": "show_total_raised", "label": "Show Total Raised", "default": true },
+    { "type": "text", "id": "total_raised", "label": "Total Raised", "default": "$12,500" }
+  ]
+}
+{% endschema %}
+
+<style>
+  .support-charity-block {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .charity-logos img {
+    margin: 10px;
+    max-width: 100px;
+  }
+
+  .total-raised {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .powered-by {
+    margin-top: 10px;
+    font-size: 0.9em;
+  }
+</style>
+
+

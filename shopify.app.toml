@@ -1,14 +1,14 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "d0c232931ffde10ab924134c96eaeea9"
-name = "NEXT APP"
-handle = "next-app-36"
-application_url = "https://skirt-items-several-beds.trycloudflare.com"
+client_id = "b9a0b983b61a6e9013a26cfa48c65c59"
+name = "Educational Coin"
+handle = "educational-coin"
+application_url = "https://helen-probably-pic-disable.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "quickstart-f5eac516.myshopify.com"
+dev_store_url = "karan-working.myshopify.com"
 include_config_on_deploy = true
 
 [access.admin]
@@ -17,17 +17,17 @@ embedded_app_direct_api_access = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "read_orders,write_customers,write_products"
 
 [auth]
 redirect_urls = [
-  "https://skirt-items-several-beds.trycloudflare.com/auth/callback",
-  "https://skirt-items-several-beds.trycloudflare.com/auth/shopify/callback",
-  "https://skirt-items-several-beds.trycloudflare.com/api/auth/callback"
+  "https://helen-probably-pic-disable.trycloudflare.com/auth/callback",
+  "https://helen-probably-pic-disable.trycloudflare.com/auth/shopify/callback",
+  "https://helen-probably-pic-disable.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
-api_version = "2024-07"
+api_version = "2024-10"
 
 [pos]
 embedded = false
