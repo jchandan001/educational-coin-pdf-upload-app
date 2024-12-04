@@ -34,7 +34,7 @@
 
           // Parse the JSON response from the server
           const { data } = await response.json();
-          console.log(data, "data**************");
+          // console.log(data, "data**************");
           isDataExist = true;
           // Populate the dynamic content
           document.getElementById("store-link").href = data?.shopName;
@@ -118,7 +118,7 @@
         } catch (error) {
           console.error("Error occurred during interval execution:", error);
         }
-      }, 3000);
+      }, 2000);
 
       function loader(status, element) {
         if (status) {
