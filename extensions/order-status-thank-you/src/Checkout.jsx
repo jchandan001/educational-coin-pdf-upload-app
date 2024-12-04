@@ -15,7 +15,7 @@ const thankYouBlock = reactExtension("purchase.thank-you.block.render", () => (
 ));
 
 export { thankYouBlock };
-const baseUrl = "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app";
+const baseUrl = "https://educational-coin-pdf-upload-app.vercel.app";
 console.log(baseUrl, "base url");
 
 function Attribution() {
@@ -66,8 +66,8 @@ function Attribution() {
           });
 
           const result = await responseData.json();
-          console.log(result, "result================");
-          const redirectUrl = `${baseUrl}/shippingLabel.html?orderId=${orderId}`;
+          // console.log(result, "result================");
+          // const redirectUrl = `${baseUrl}/shippingLabel.html?orderId=${orderId}`;
           // navigate(redirectUrl);
         } catch (error) {
           console.error("Error uploading file:", error);
