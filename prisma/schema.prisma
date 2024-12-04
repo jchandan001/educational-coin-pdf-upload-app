@@ -58,5 +58,23 @@ model EducationalPdfUpload {
   fileName  String
   fileType  String
   fileUrl   String
+  createdAt  DateTime @default(now())
+  uploadedAt DateTime @default(now())
+}
+
+
+model OrderDetails {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId               String
+  shopName              String
+  lines                 Json
+  subTotalAmount        Json
+  totalAmount           Json
+  totalTaxAmount        Json
+  totalShippingAmount   Json
+  shippingAddress       Json
+  billingAddress        Json
+  subtotalAmountCurrencyCode  String?
+  createdAt  DateTime @default(now())
   uploadedAt DateTime @default(now())
 }

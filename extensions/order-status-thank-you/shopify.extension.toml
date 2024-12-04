@@ -23,11 +23,7 @@ module = "./src/Checkout.jsx"
 export = "thankYouBlock"
 
 [extensions.capabilities]
+api_access = true
 network_access = true
 
-
-[[extensions.targeting]]
-target = "customer-account.order-status.block.render"
-module = "./src/Checkout.jsx"
-export = "orderDetailsBlock"
 # [END order-status.cofig-extension]

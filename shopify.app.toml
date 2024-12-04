@@ -3,7 +3,7 @@
 client_id = "b9a0b983b61a6e9013a26cfa48c65c59"
 name = "Educational Coin"
 handle = "educational-coin"
-application_url = "https://helen-probably-pic-disable.trycloudflare.com"
+application_url = "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app"
 embedded = true
 
 [build]
@@ -17,13 +17,13 @@ embedded_app_direct_api_access = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,write_customers,write_products"
+scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://helen-probably-pic-disable.trycloudflare.com/auth/callback",
-  "https://helen-probably-pic-disable.trycloudflare.com/auth/shopify/callback",
-  "https://helen-probably-pic-disable.trycloudflare.com/api/auth/callback"
+  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/auth/callback",
+  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/auth/shopify/callback",
+  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/api/auth/callback"
 ]
 
 [webhooks]

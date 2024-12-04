@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/styles/shopify.css" rel="stylesheet" />
+    <title>Thanks</title>
+    <script>
+      // Extract orderId from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get("orderId");
+      console.log(orderId, "orderId**************");
+      let shopName = "";
+      let isDataExist = false;
+      async function fetchData() {
+        try {
+          if (!orderId) {
+            throw new Error("Order ID is missing in the URL");
+          }
+          loader(true, "#thankyou_container");
+          // Make an API call using the orderId
+          const response = await fetch("/api/orderInfo", {
+            method: "POST", // POST request
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderId: orderId }),
+          });
+          console.log(response, "resonserasfakjiasdfhsejkf");
+          if (!response.ok) {
+            loader(false, "#thankyou_container");
+            throw new Error("Network response was not ok");
+          }
+
+          // Parse the JSON response from the server
+          const { data } = await response.json();
+          console.log(data, "data**************");
+          isDataExist = true;
+          // Populate the dynamic content
+          document.getElementById("store-link").href = data?.shopName;
+          shopName = data?.shopName;
+          document.getElementById("order-number").textContent = data?.orderId;
+          document.getElementById("shipping-name").textContent = "Shipping";
+          document.getElementById("customer-name").textContent =
+            data?.customer?.name;
+          document.getElementById("shipping-address").textContent =
+            `${data?.shippingAddress?.city}, ${data?.shippingAddress.provinceCode}, ${data?.shippingAddress?.countryCode}`;
+          document.getElementById("customer-email").textContent =
+            data?.customer?.email;
+          document.getElementById("customer-contact").textContent =
+            data?.customer?.contact;
+
+          // Handle continue shopping button
+          // document.getElementById("btn-contonue").onclick = () => {
+          //   window.location.href = data?.shopName; // Redirect to store
+          // };
+
+          // Populate order summary
+          const orderItemsContainer = document.getElementById("order-items");
+          const lines = JSON.parse(data.lines); // Parsing the stringified lines array
+          lines.forEach((item) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "smry-dta";
+            itemDiv.innerHTML = `
+              <div class="image-tital">
+                <div class="image-smry">
+                  <img src="${item.merchandise.image.url}" alt="${item.merchandise.title}" />
+                </div>
+                <div class="tital-smry ms-4">
+                  <h6 class="item-title">${item.merchandise.title}</h6>
+                  <p class="per_col-size">${item.variant_title || ""} Quantity: ${item.quantity}</p>
+                </div>
+              </div>
+              <div class="crose-price">
+                <div class="crose">
+                  <h5 class="price-iteam">${item.cost.totalAmount.currencyCode} ${item.cost.totalAmount.amount.toFixed(2)}</h5>
+                </div>
+              </div>
+            `;
+            orderItemsContainer.appendChild(itemDiv);
+          });
+
+          // Populate pricing details
+          document.getElementById("subtotal").textContent =
+            `${data?.subTotalAmount?.currencyCode} ${data.subTotalAmount.amount.toFixed(2)}`;
+          document.getElementById("discount").textContent = `${
+            data?.discountAmount
+              ? (data?.discountAmount?.amount).toFixed(2)
+              : "0.00"
+          }`;
+          document.getElementById("shipping").textContent = `${
+            data?.totalShippingAmount
+              ? data?.totalShippingAmount.amount.toFixed(2)
+              : "0.00"
+          }`;
+          document.getElementById("taxes").textContent = `${
+            data?.totalTaxAmount
+              ? data.totalTaxAmount.amount.toFixed(2)
+              : "0.00"
+          }`;
+          document.getElementById("total").textContent =
+            `${data?.totalAmount?.currencyCode} ${data?.totalAmount?.amount.toFixed(2)}`;
+          loader(false, "#thankyou_container");
+        } catch (error) {
+          loader(false, "#thankyou_container");
+          console.error("Error fetching order data:", error);
+        }
+      }
+
+      const intervalID = setInterval(async function () {
+        try {
+          await fetchData();
+          if (isDataExist) {
+            console.log(isDataExist,'isDataExist*********')
+            clearInterval(intervalID);
+            console.log("Data fetched successfully. Stopping interval.");
+          }
+        } catch (error) {
+          console.error("Error occurred during interval execution:", error);
+        }
+      }, 3000);
+
+      function loader(status, element) {
+        if (status) {
+          // document.querySelector("#checkout_container").style.visibility = "hidden";
+          document.querySelector(element).style.opacity = "50%";
+          document.querySelector("#razor-loader").style.display = "block";
+          document.querySelector("#razor-loader").style.visibility = "visible";
+          document.querySelector(element).style["pointer-events"] = "none";
+
+          return;
+        }
+        document.querySelector("#razor-loader").style.display = "none";
+        document.querySelector("#razor-loader").style.visibility = "hidden";
+        // document.querySelector("#checkout_container").style.visibility = "visible";
+        document.querySelector(element).style.opacity = "1";
+        document.querySelector(element).style["pointer-events"] = "all";
+      }
+    </script>
+  </head>
+  <body onload="fetchData()">
+    <div class="main">
+      <!-- <div class="loader">
+        <img src="img/loader.gif" alt="loader" />
+      </div> -->
+      <div class="razor-main-container">
+        <div id="razor-myModal" class="razor_modal_display">
+          <!-- Modal content -->
+          <div class="razor-checkout-modal-content">
+            <div
+              id="razor-loader"
+              class="loader-center"
+              style="visibility: hidden; display: none"
+            ></div>
+            <div class="razor-display-alert">
+              <span class="razor-closebtn">&times;</span>
+              <span id="alert_msg">
+                <strong>Error!</strong> Indicates a dangerous or potentially
+                negative action.
+              </span>
+            </div>
+            <div class="head_container">
+              <a href="#" id="store-link" title="Logo">
+                <img class="logo" src="vercel.svg" alt="Fully Kratom Logo" />
+              </a>
+            </div>
+            <div id="thankyou_container" class="mt-5">
+              <div class="grid-item">
+                <div class="thank-you-section">
+                  <h4 class="user-name thanks_msg">Thank you for shopping</h4>
+                  <h4 class="user-name order_no">
+                    Order Id.: <span id="order-number"></span>
+                  </h4>
+
+                  <div class="main-ship-cheak razor-d-flex mt-3">
+                    <div class="shipping razor-d-flex">
+                      <div class="icon-airplane">
+                        <img src="/img/shipping.png" />
+                      </div>
+                      <div class="user-datils-address">
+                        <h4 id="shipping-name">Shipping</h4>
+                        <p class="mb-0" id="customer-name"></p>
+                        <p class="mb-0" id="shipping-address"></p>
+                        <p class="mb-0" id="customer-email"></p>
+                        <p class="mb-0" id="customer-contact"></p>
+                      </div>
+                    </div>
+                    <div class="check">
+                      <img src="/img/checked.png" />
+                    </div>
+                  </div>
+                  <!-- <div class="btn-contonue-shoping">
+                    <button id="btn-contonue">Continue shopping</button>
+                  </div> -->
+
+                  <div
+                    class="pdf-upload-container"
+                    style="text-align: center; margin-top: 20px"
+                  >
+                    <h5
+                      style="
+                        font-family: Arial, sans-serif;
+                        color: #1e49d8;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      Upload Your Shipping Label (PDF)
+                    </h5>
+                    <form
+                      id="pdf-upload-form"
+                      style="
+                        display: inline-block;
+                        max-width: 400px;
+                        width: 100%;
+                      "
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          align-items: center;
+                          gap: 10px;
+                        "
+                      >
+                        <label
+                          for="pdf-file"
+                          style="
+                            font-family: Arial, sans-serif;
+                            font-size: 18px;
+                            color: #555;
+                            font-weight: 700;
+                          "
+                        >
+                          Select PDF:
+                        </label>
+                        <input
+                          type="file"
+                          id="pdf-file"
+                          name="file"
+                          accept="application/pdf"
+                          required
+                          style="
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            padding: 8px 12px;
+                            width: 100%;
+                            max-width: 300px;
+                            font-size: 14px;
+                            color: #333;
+                          "
+                        />
+                        <button
+                          type="submit"
+                          style="
+                            background-color: #007bff;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            padding: 10px 15px;
+                            font-family: Arial, sans-serif;
+                            font-size: 14px;
+                            cursor: pointer;
+                            transition: background-color 0.3s ease;
+                            width: 100%;
+                            max-width: 300px;
+                          "
+                        >
+                          Upload Shipping Label PDF
+                        </button>
+                      </div>
+                    </form>
+                    <p
+                      id="upload-status"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        color: #666;
+                        margin-top: 10px;
+                      "
+                    ></p>
+                  </div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="order-smry-data-main">
+                  <div class="order-smrey">
+                    <h4 class="order-smry-t mb-4">Order Summary</h4>
+                    <div class="order-main" id="order-items"></div>
+                    <div class="total-ship-price">
+                      <h5 class="mb-0 mt-3 subtotal-data total-thx-data">
+                        Subtotal<span class="float-end" id="subtotal"></span>
+                      </h5>
+                      <h5 class="mb-3 mt-1 item_discount_title total-thx-data">
+                        Discount code<span
+                          class="float-end"
+                          id="discount"
+                        ></span>
+                      </h5>
+                      <h5 class="mb-0 mt-1 shipping-data total-thx-data">
+                        Shipping<span class="float-end" id="shipping"></span>
+                      </h5>
+                      <h5 class="mb-3 mt-1 tax-data total-thx-data">
+                        Taxes<span class="float-end" id="taxes"></span>
+                      </h5>
+                    </div>
+                    <div class="last-fotr-total">
+                      <h5 class="mt-3">
+                        Total<span class="float-end" id="total"></span>
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("pdf-upload-form")
+        .addEventListener("submit", async (event) => {
+          loader(true, "#thankyou_container");
+          document.querySelector("#pdf-upload-form").style.display = "none";
+          event.preventDefault();
+          const fileInput = document.getElementById("pdf-file");
+          console.log(fileInput, "file input");
+          const file = fileInput.files[0];
+          console.log(file, "file");
+          console.log(shopName, "shopname");
+          if (!file || file.type !== "application/pdf") {
+            document.querySelector("#pdf-upload-form").style.display =
+              "inline-block";
+            alert("Please select a valid PDF file to upload.");
+            loader(false, "#thankyou_container");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("orderId", orderId);
+          console.log(formData, "form data ");
+          try {
+            const response = await fetch(`/api/upload?orderId=${orderId}`, {
+              method: "POST",
+              body: formData,
+            });
+            console.log(response, "response api upload");
+            if (!response.ok) {
+              throw new Error("Failed to upload PDF.");
+            }
+            const result = await response.json();
+            document.getElementById("upload-status").textContent =
+              "Pdf uploaded successfully.";
+            console.log("Upload result:", result);
+            setTimeout(() => {
+              window.location.href = `https://${shopName}`; // Redirect to store home page
+            }, 800);
+          } catch (error) {
+            document.querySelector("#pdf-upload-form").style.display =
+              "inline-block";
+            console.error("Error uploading PDF:", error);
+            document.getElementById("upload-status").textContent =
+              "Upload failed.";
+          } finally {
+            loader(false, "#thankyou_container");
+          }
+        });
+    </script>
+  </body>
+</html>

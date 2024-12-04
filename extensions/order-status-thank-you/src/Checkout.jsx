@@ -4,136 +4,78 @@ import {
   View,
   Heading,
   Text,
-  ChoiceList,
-  Choice,
   Button,
   useStorage,
-  TextField,
   useApi,
 } from "@shopify/ui-extensions-react/checkout";
 import { useCallback, useEffect, useState } from "react";
-// [START order-status.extension-point]
-// Allow the attribution survey to display on the thank you page.
+// import { useNavigate } from "react-router-dom";
 const thankYouBlock = reactExtension("purchase.thank-you.block.render", () => (
   <Attribution />
 ));
 
 export { thankYouBlock };
-const baseUrl ='https://payments-constraints-liberty-biographies.trycloudflare.com'
-
+const baseUrl = "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app";
+console.log(baseUrl, "base url");
 
 function Attribution() {
-  const [attribution, setAttribution] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isFileSelected, setIsFileSelected] = useState(false);
-  const [file, setFile] = useState(null);
-  const { orderConfirmation } = useApi();
+  const orderDetails = useApi();
+  // const navigate = useNavigate();
+  const {
+    orderConfirmation,
+    lines,
+    shop,
+    cost,
+    shippingAddress,
+    billingAddress,
+  } = orderDetails;
+
+  console.log("orderConfirmation", orderDetails);
   const orderId = orderConfirmation?.current?.order?.id?.split("/").pop();
-  console.log("orderId", orderId);
+  const orderPayload = {
+    orderId,
+    shopName: shop?.myshopifyDomain,
+    lines: lines.current,
+    subTotalAmount: cost?.subtotalAmount?.current,
+    totalAmount: cost?.totalAmount?.current,
+    totalTaxAmount: cost?.totalTaxAmount?.current,
+    totalShippingAmount: cost?.totalShippingAmount?.current,
+    shippingAddress: shippingAddress?.current,
+    billingAddress: billingAddress.current,
+  };
+  // console.log(orderPayload, "orderpayload");
+  // console.log("orderId", orderId);
   // Store into local storage if the attribution survey was completed by the customer.
   const [attributionSubmitted, setAttributionSubmitted] = useStorageState(
     "attribution-submitted",
   );
 
-  const handleFileChange = (event) => {
-    try {
-      console.log(event, "event************");
-      if (!event) {
-        console.log("event not found.");
-        setErrorMessage("No file selected.");
-        return null;
-      }
-
-      setIsFileSelected(true);
-      console.log(event?.split(".").pop().toLowerCase(), "extension");
-
-      if (event?.split(".").pop().toLowerCase() !== "pdf") {
-        console.log("Only PDF files are allowed.");
-        setErrorMessage("Only PDF files are allowed.");
-        return;
-      }
-
-      setFile(event);
-      setErrorMessage("");
-    } catch (error) {
-      console.log(error, "error while uploading pdf");
-      return null;
-    }
-  };
-
   async function handleSubmit() {
-    // Simulate a server
-    // handleFileChange()
     setLoading(true);
     return new Promise((resolve) => {
-      setTimeout(() => {
-        // const fileBlob = new Blob([event], { type: "application/pdf" }); // Convert to Blob
-        // formData.append("file", fileBlob, `shipping_label_${Date.now()}.pdf`);
-
-        if (isFileSelected && errorMessage) {
-          setLoading(false);
-          return;
-        }
-
-        if (!file) {
-          setErrorMessage("No file selected.");
-          setLoading(false);
-          return;
-        }
-
-        setErrorMessage("");
-
-        const formData = new FormData();
-        const fileBlob = new Blob([file], { type: "application/pdf" });
-        console.log(fileBlob, "file blob");
-        formData.append("file", fileBlob);
-        formData.append("orderId", orderId);
-
-        // formData.append("orderId", orderId);
-
-        console.log(
-          JSON.stringify(formData.get("file")),
-          "form data============",
-        );
-
-        // const fileType = "application/pdf";
-        // const fileName = file;
-
+      setTimeout(async () => {
         try {
-          fetch(
-            `${baseUrl}/api/upload?orderId=${orderId}`,
-            {
-              method: "POST",
-              body: formData,
-              mode: "no-cors",
-              headers: {
-                "Content-Type": "application/json",
-              },
+          const responseData = await fetch(`${baseUrl}/api/orderSaved`, {
+            method: "POST",
+            body: JSON.stringify(orderPayload),
+            headers: {
+              "Content-Type": "application/json",
             },
-          )
-            .then((res) => {
-              console.log(res, "resonse while uploading");
-            })
-            .catch((error) => {
-              console.log(
-                error,
-                "error while uploading file on s3*****************",
-              );
-            });
+            mode: "no-cors",
+          });
+
+          const result = await responseData.json();
+          console.log(result, "result================");
+          const redirectUrl = `${baseUrl}/shippingLabel.html?orderId=${orderId}`;
+          // navigate(redirectUrl);
         } catch (error) {
           console.error("Error uploading file:", error);
         } finally {
           setLoading(false);
           resolve();
         }
-
-        
-        // Send the review to the server
-        // console.log("Submitted:", attribution);
         setLoading(false);
-        // setAttributionSubmitted(true);
-        // resolve();
       }, 750);
     });
   }
@@ -145,42 +87,22 @@ function Attribution() {
 
   return (
     <Survey
-      file={file}
-      title="How did you hear about us ?"
+      // file={file}
+      orderId={orderId}
+      title="Attach shipping pdf file with your order?"
       onSubmit={handleSubmit}
       loading={loading}
-    >
-      <BlockStack spacing="tight">
-        <Text>Upload Shipping Label (PDF)</Text>
-        <TextField type="file" onChange={handleFileChange}></TextField>
-        {errorMessage && <Text appearance="critical">{errorMessage}</Text>}
-      </BlockStack>
-    </Survey>
+      />
   );
 }
 // [END order-status.attribution-survey]
 
 // [START order-status.survey-component]
-function Survey({ title, file, description, onSubmit, children, loading }) {
-  const [submitted, setSubmitted] = useState(false);
-
+function Survey({ title, orderId, description, onSubmit, children, loading }) {
   async function handleSubmit() {
     await onSubmit();
-    setSubmitted(true);
   }
-
-  if (submitted) {
-    return (
-      <View border="base" padding="base" borderRadius="base">
-        <BlockStack>
-          {/* <Heading>Thanks for your feedback!</Heading> */}
-          <Heading>Thanks for uploading shipping pdf!</Heading>
-          {/* <Text>Your response has been submitted</Text> */}
-          <Text>Shipping pdf uploaded successfully.</Text>
-        </BlockStack>
-      </View>
-    );
-  }
+  const redirectUrl = `${baseUrl}/shippingLabel.html?orderId=${orderId}`;
 
   return (
     <View border="base" padding="base" borderRadius="base">
@@ -188,8 +110,13 @@ function Survey({ title, file, description, onSubmit, children, loading }) {
         <Heading>{title}</Heading>
         <Text>{description}</Text>
         {children}
-        <Button kind="secondary" onPress={handleSubmit} loading={loading}>
-          Upload shipping label pdf
+        <Button
+          to={redirectUrl}
+          kind="secondary"
+          onPress={handleSubmit}
+          loading={loading}
+        >
+          Upload Shipping Label PDF
         </Button>
       </BlockStack>
     </View>

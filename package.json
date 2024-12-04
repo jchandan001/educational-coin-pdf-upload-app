@@ -7,6 +7,7 @@
     "shopify": "shopify",
     "build": "next build",
     "dev": "shopify app dev",
+    "start": "next start",
     "info": "shopify app info",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
@@ -14,7 +15,7 @@
     "migrate": "prisma migrate dev",
     "postinstall": "prisma generate",
     "graphql-codegen": "graphql-codegen --config .graphqlrc.ts",
-    "prepare": "npx prisma generate"
+    "prepare": "npx prisma generate && npx prisma db push"
   },
   "dependencies": {
     "@apollo/client": "^3.9.6",
@@ -33,6 +34,7 @@
     "prisma": "^5.10.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-input-files": "^1.2.0",
     "sharp": "^0.33.5"
   },
   "devDependencies": {
