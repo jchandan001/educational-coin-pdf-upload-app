@@ -3,7 +3,7 @@
 client_id = "b9a0b983b61a6e9013a26cfa48c65c59"
 name = "Educational Coin"
 handle = "educational-coin"
-application_url = "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app"
+application_url = "https://educational-coin-pdf-upload-app.vercel.app"
 embedded = true
 
 [build]
@@ -21,9 +21,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/auth/callback",
-  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/auth/shopify/callback",
-  "https://266f-2403-8940-23-6f-cad4-b86e-9e5f-71a.ngrok-free.app/api/auth/callback"
+  "https://educational-coin-pdf-upload-app.vercel.app/auth/callback",
+  "https://educational-coin-pdf-upload-app.vercel.app/auth/shopify/callback",
+  "https://educational-coin-pdf-upload-app.vercel.app/api/auth/callback"
 ]
 
 [webhooks]

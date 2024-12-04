@@ -12,6 +12,7 @@
       console.log(orderId, "orderId**************");
       let shopName = "";
       let isDataExist = false;
+      let dataInProcess = true;
       async function fetchData() {
         try {
           if (!orderId) {
@@ -28,6 +29,7 @@
           });
           console.log(response, "resonserasfakjiasdfhsejkf");
           if (!response.ok) {
+            dataInProcess = false;
             loader(false, "#thankyou_container");
             throw new Error("Network response was not ok");
           }
@@ -109,9 +111,10 @@
 
       const intervalID = setInterval(async function () {
         try {
+          if (dataInProcess) return;
           await fetchData();
           if (isDataExist) {
-            console.log(isDataExist,'isDataExist*********')
+            console.log(isDataExist, "isDataExist*********");
             clearInterval(intervalID);
             console.log("Data fetched successfully. Stopping interval.");
           }
