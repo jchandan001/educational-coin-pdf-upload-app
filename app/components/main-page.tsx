@@ -142,7 +142,7 @@ export default function Home({ shop }: { shop: string }) {
                       })}
                     </td>
                     <td style={{ padding: "12px" }}>
-                      <Link url={order?.fileUrl}>View</Link>;
+                      <Link url={order?.fileUrl}>View</Link>
                     </td>
                   </tr>
                ))) || <tr><td colSpan={2}>No orders available</td></tr>}
