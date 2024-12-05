@@ -73,6 +73,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     const allowedMimeTypes = [
       "image/png",
+      "image/jpg",
       "image/jpeg",
       "text/plain",
       "application/pdf",

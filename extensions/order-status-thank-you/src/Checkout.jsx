@@ -113,7 +113,7 @@ function Attribution() {
     <Survey
       // file={file}
       orderId={orderId}
-      title="Attach shipping pdf file with your order?"
+      title="Attach Shipping Label file with your order?"
       onSubmit={handleSubmit}
       loading={loading}
     />

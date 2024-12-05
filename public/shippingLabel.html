@@ -281,7 +281,7 @@
                       style="
                         font-family: Arial, sans-serif;
                         font-size: 14px;
-                        color: red;
+                        color: rgb(128, 125, 125);
                         margin-top: 10px;
                       "
                     ></p>
@@ -335,10 +335,11 @@
           const file = fileInput.files[0];
           // console.log(file, "file");
           // console.log(shopName, "shopname");
-  
+
           // Allowed MIME types
           const allowedTypes = [
             "image/png",
+            "image/jpg",
             "image/jpeg",
             "text/plain",
             "application/pdf",
@@ -368,19 +369,22 @@
               // Display the error message from the backend
               document.getElementById("upload-status").textContent =
                 errorData.error || "Upload failed.";
+              document.getElementById("upload-status").style.color = "#dd2315";
+
               document.querySelector("#pdf-upload-form").style.display =
                 "inline-block";
               return;
             }
             const result = await response.json();
             console.log(result, "result**************");
-
+            document.getElementById("upload-status").style.color = "#056e26";
             document.getElementById("upload-status").textContent =
               "Pdf uploaded successfully.";
+
             console.log("Upload result:", result);
-            // setTimeout(() => {
-            //   window.location.href = `https://${shopName}`; // Redirect to store home page
-            // }, 800);
+            setTimeout(() => {
+              window.location.href = `https://${shopName}`; // Redirect to store home page
+            }, 800);
           } catch (error) {
             console.error("Error uploading PDF:", error);
             document.querySelector("#pdf-upload-form").style.display =
