@@ -67,6 +67,7 @@ model OrderDetails {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   orderId               String
   shopName              String
+  confirmationNumber    String?
   lines                 Json
   subTotalAmount        Json
   totalAmount           Json

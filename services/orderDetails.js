@@ -21,6 +21,7 @@ export async function saveOrderDetails(orderPayload) {
         },
         data: {
           orderId: orderPayload?.orderId,
+          confirmationNumber: orderPayload?.confirmationNumber,
           shopName: orderPayload?.shopName,
           lines: JSON.stringify(orderPayload?.lines),
           subTotalAmount: orderPayload?.subTotalAmount,
@@ -41,6 +42,7 @@ export async function saveOrderDetails(orderPayload) {
         data: {
           orderId: orderPayload?.orderId,
           shopName: orderPayload?.shopName,
+          confirmationNumber: orderPayload?.confirmationNumber,
           lines: JSON.stringify(orderPayload?.lines),
           subTotalAmount: orderPayload?.subTotalAmount,
           totalAmount: orderPayload?.totalAmount,
@@ -85,5 +87,3 @@ export async function getOrderById(orderId) {
     throw new Error("Failed to fetch order details");
   }
 }
-
-

@@ -43,8 +43,10 @@ function Attribution() {
   );
 
   const orderId = orderConfirmation?.current?.order?.id?.split("/").pop();
+  const confirmationNumber = orderConfirmation?.current?.number
   const orderPayload = {
     orderId,
+    confirmationNumber,
     shopName: shop?.myshopifyDomain,
     lines: lines.current,
     subTotalAmount: cost?.subtotalAmount?.current,

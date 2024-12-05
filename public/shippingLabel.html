@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/styles/shopify.css" rel="stylesheet" />
     <title>Thanks</title>
+ 
     <script>
       // Extract orderId from URL query parameters
       const urlParams = new URLSearchParams(window.location.search);
@@ -36,15 +37,29 @@
 
           // Parse the JSON response from the server
           const { data } = await response.json();
-          // console.log(data, "data**************");
+          console.log(data, "data**************");
           isDataExist = true;
           // Populate the dynamic content
           document.getElementById("store-link").href = data?.shopName;
           shopName = data?.shopName;
-          document.getElementById("order-number").textContent = data?.orderId;
-          document.getElementById("shipping-name").textContent = "Shipping";
+          // document.getElementById("order-number").textContent = data?.orderId;
+          document.getElementById("confirmation-number").textContent =
+            data?.confirmationNumber
+              ? `Confirmation #${data?.confirmationNumber}`
+              : "Confirmation ";
+
+          document.getElementById("thank-you-header").textContent =
+            data?.shippingAddress?.firstName && data?.shippingAddress?.lastName
+              ? `Thank you, ${data?.shippingAddress.firstName} ${data?.shippingAddress?.lastName}!`
+              : data?.shippingAddress?.firstName
+                ? `Thank you, ${data?.shippingAddress?.firstName}!`
+                : data?.shippingAddress?.lastName
+                  ? `Thank you, ${data?.shippingAddress?.lastName}!`
+                  : "Thank you!";
+
+          // document.getElementById("shipping-name").textContent = "Shipping";
           document.getElementById("customer-name").textContent =
-            data?.customer?.name;
+          `${data?.shippingAddress?.firstName}  ${data?.shippingAddress?.lastName}`;
           document.getElementById("shipping-address").textContent =
             `${data?.shippingAddress?.city}, ${data?.shippingAddress.provinceCode}, ${data?.shippingAddress?.countryCode}`;
           document.getElementById("customer-email").textContent =
@@ -174,28 +189,42 @@
             <div id="thankyou_container" class="mt-5">
               <div class="grid-item">
                 <div class="thank-you-section">
-                  <h4 class="user-name thanks_msg">Thank you for shopping</h4>
-                  <h4 class="user-name order_no">
-                    Order Id.: <span id="order-number"></span>
-                  </h4>
+                  <!-- <h4 class="user-name thanks_msg">Thank you for shopping</h4> -->
 
-                  <div class="main-ship-cheak razor-d-flex mt-3">
-                    <div class="shipping razor-d-flex">
-                      <div class="icon-airplane">
-                        <img src="/img/shipping.png" />
+                  <div class="thank-you-container">
+                    <div class="thankyou-confirmation-message">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 50 50"
+                        focusable="false"
+                        aria-hidden="true"
+                        style="color: var(--x-default-color-accent)"
+                      >
+                        <path
+                          stroke-width="2"
+                          d="M49 25c0 13.255-10.745 24-24 24S1 38.255 1 25 11.745 1 25 1s24 10.745 24 24Z"
+                          style="stroke: currentcolor"
+                        ></path>
+                        <path
+                          stroke-width="2"
+                          d="m15 24.511 7.307 7.307L35.125 19"
+                          style="stroke: currentcolor"
+                        ></path>
+                      </svg>
+                      <div class="confirmation">
+                        <span id="confirmation-number"> Confirmation </span>
+                        <h2 id="thank-you-header" class="thank-you-header">
+                          Thank you
+                        </h2>
                       </div>
-                      <div class="user-datils-address">
-                        <h4 id="shipping-name">Shipping</h4>
-                        <p class="mb-0" id="customer-name"></p>
-                        <p class="mb-0" id="shipping-address"></p>
-                        <p class="mb-0" id="customer-email"></p>
-                        <p class="mb-0" id="customer-contact"></p>
-                      </div>
-                    </div>
-                    <div class="check">
-                      <img src="/img/checked.png" />
                     </div>
                   </div>
+
+                  <!-- <h4 class="user-name order_no">
+                    Order Id.: <span id="order-number"></span>
+                  </h4> -->
+
                   <!-- <div class="btn-contonue-shoping">
                     <button id="btn-contonue">Continue shopping</button>
                   </div> -->
@@ -209,6 +238,7 @@
                         font-family: Arial, sans-serif;
                         color: #1e49d8;
                         margin-bottom: 15px;
+                        margin-top: 10px;
                       "
                     >
                       Upload Your Shipping Label
@@ -286,32 +316,60 @@
                       "
                     ></p>
                   </div>
+
+                  <div class="order-details-container">
+                    <span>Order Details</span>
+                    <div class="main-ship-cheak razor-d-flex">
+                      <!-- <h2>Order details</h2> -->
+  
+                      <div class="shipping razor-d-flex">
+                        <!-- <div class="icon-airplane">
+                          <img src="/img/shipping.png" />
+                        </div> -->
+                        <div class="user-datils-address">
+                          <h4 id="shipping-name">Shipping address</h4>
+                          <p class="mb-0" id="customer-name"></p>
+                          <p class="mb-0" id="shipping-address"></p>
+                          <p class="mb-0" id="customer-email"></p>
+                          <p class="mb-0" id="customer-contact"></p>
+                        </div>
+                      </div>
+                      <!-- <div class="check">
+                        <img src="/img/checked.png" />
+                      </div> -->
+                    </div>
+  
+                  </div>
+
+               
+                
                 </div>
               </div>
-              <div class="grid-item">
+
+              <div class="grid-item order-summery">
                 <div class="order-smry-data-main">
                   <div class="order-smrey">
-                    <h4 class="order-smry-t mb-4">Order Summary</h4>
+                    <!-- <h4 class="order-smry-t mb-4">Order Summary</h4> -->
                     <div class="order-main" id="order-items"></div>
                     <div class="total-ship-price">
                       <h5 class="mb-0 mt-3 subtotal-data total-thx-data">
                         Subtotal<span class="float-end" id="subtotal"></span>
                       </h5>
-                      <h5 class="mb-3 mt-1 item_discount_title total-thx-data">
+                      <h5 class="mb-0 mt-3 item_discount_title total-thx-data">
                         Discount code<span
                           class="float-end"
                           id="discount"
                         ></span>
                       </h5>
-                      <h5 class="mb-0 mt-1 shipping-data total-thx-data">
+                      <h5 class="mb-0 mt-3 shipping-data total-thx-data">
                         Shipping<span class="float-end" id="shipping"></span>
                       </h5>
-                      <h5 class="mb-3 mt-1 tax-data total-thx-data">
+                      <h5 class="mb-0 mt-3 tax-data total-thx-data">
                         Taxes<span class="float-end" id="taxes"></span>
                       </h5>
                     </div>
                     <div class="last-fotr-total">
-                      <h5 class="mt-3">
+                      <h5 class="mt-2">
                         Total<span class="float-end" id="total"></span>
                       </h5>
                     </div>
