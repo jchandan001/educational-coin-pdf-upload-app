@@ -9,14 +9,16 @@ import {
   useApi,
 } from "@shopify/ui-extensions-react/checkout";
 import { useCallback, useEffect, useState } from "react";
+import { BASE_URL } from "../../../config/constant";
 // import { useNavigate } from "react-router-dom";
 const thankYouBlock = reactExtension("purchase.thank-you.block.render", () => (
   <Attribution />
 ));
 
 export { thankYouBlock };
-const baseUrl = "https://educational-coin-pdf-upload-app.vercel.app";
-console.log(baseUrl, "base url");
+// const baseUrl = "https://educational-coin-pdf-upload-app.vercel.app";
+// const baseUrl = 'https://eval-tied-freebsd-dans.trycloudflare.com'
+console.log(BASE_URL, "base url");
 
 function Attribution() {
   const [loading, setLoading] = useState(false);
@@ -29,9 +31,17 @@ function Attribution() {
     cost,
     shippingAddress,
     billingAddress,
+    deliveryGroups,
   } = orderDetails;
 
   console.log("orderConfirmation", orderDetails);
+  console.log("deliveryGroups", deliveryGroups);
+  console.log("deliveryGroups current", deliveryGroups?.current);
+  console.log(
+    "deliveryGroups deliveryOptions",
+    deliveryGroups?.current[0]?.deliveryOptions,
+  );
+
   const orderId = orderConfirmation?.current?.order?.id?.split("/").pop();
   const orderPayload = {
     orderId,
@@ -51,12 +61,21 @@ function Attribution() {
     "attribution-submitted",
   );
 
+  // Check if delivery options contain "Dropship / Blind Ship"
+  const deliveryOptions = deliveryGroups?.current?.[0]?.deliveryOptions || [];
+  const shouldShowSurvey = deliveryOptions.some(
+    (option) =>
+      option.title === "Dropship / Blind Ship" && option.type === "shipping",
+  );
+
+  console.log(shouldShowSurvey, "shouldShowSurvey");
+
   async function handleSubmit() {
     setLoading(true);
     return new Promise((resolve) => {
       setTimeout(async () => {
         try {
-          const responseData = await fetch(`${baseUrl}/api/orderSaved`, {
+          const responseData = await fetch(`${BASE_URL}/api/orderSaved`, {
             method: "POST",
             body: JSON.stringify(orderPayload),
             headers: {
@@ -81,7 +100,12 @@ function Attribution() {
   }
 
   // Hides the survey if the attribution has already been submitted
-  if (attributionSubmitted.loading || attributionSubmitted.data === true) {
+  if (
+    attributionSubmitted.loading ||
+    attributionSubmitted.data === true ||
+    !shouldShowSurvey
+  ) {
+    console.log(!shouldShowSurvey, "!shouldShowSurvey not showing");
     return null;
   }
 
@@ -92,7 +116,7 @@ function Attribution() {
       title="Attach shipping pdf file with your order?"
       onSubmit={handleSubmit}
       loading={loading}
-      />
+    />
   );
 }
 // [END order-status.attribution-survey]
@@ -102,7 +126,7 @@ function Survey({ title, orderId, description, onSubmit, children, loading }) {
   async function handleSubmit() {
     await onSubmit();
   }
-  const redirectUrl = `${baseUrl}/shippingLabel.html?orderId=${orderId}`;
+  const redirectUrl = `${BASE_URL}/shippingLabel.html?orderId=${orderId}`;
 
   return (
     <View border="base" padding="base" borderRadius="base">

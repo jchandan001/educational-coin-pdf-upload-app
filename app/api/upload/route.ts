@@ -12,7 +12,11 @@ const s3Client = new S3Client({
 import { uploadEducationalPdf } from "../../../services/educational";
 console.log("S3 client initialized");
 
-async function uploadImageToS3(file: Buffer, fileName: string): Promise<any> {
+async function uploadImageToS3(
+  file: Buffer,
+  fileName: string,
+  mimeType: string,
+): Promise<any> {
   console.log("Preparing to resize and upload file:", file, fileName);
   console.log("File resized successfully");
 
@@ -20,7 +24,7 @@ async function uploadImageToS3(file: Buffer, fileName: string): Promise<any> {
     Bucket: process.env.AWS_S3_BUCKET_NAME as string,
     Key: `shipping-label-${fileName}`,
     Body: file,
-    ContentType: "application/pdf",
+    ContentType: mimeType,
   };
 
   console.log("S3 upload parameters prepared:", params);
@@ -67,15 +71,22 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const mimeType = file.type;
     console.log("File MIME type:", mimeType);
 
-    const fileExtension = mimeType.split("/")[1];
-    console.log("File extension:", fileExtension);
+    const allowedMimeTypes = [
+      "image/png",
+      "image/jpeg",
+      "text/plain",
+      "application/pdf",
+    ];
 
-    if (mimeType !== "application/pdf" || fileExtension !== "pdf") {
+    if (!allowedMimeTypes.includes(mimeType)) {
       return NextResponse.json(
-        { error: "Invalid file format. Only PDF files are allowed." },
+        { error: "Invalid file format." },
         { status: 400 },
       );
     }
+
+    const fileExtension = mimeType.split("/")[1];
+    console.log("File extension:", fileExtension);
 
     const searchParams = request.nextUrl.searchParams;
     const orderId = searchParams.get("orderId");
@@ -87,6 +98,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const { fileName, fileUrl } = await uploadImageToS3(
       buffer,
       `${orderId}.${fileExtension}`,
+      mimeType,
     );
     console.log("File uploaded with name:", fileName, fileUrl);
     //     if (signedUrl) {
