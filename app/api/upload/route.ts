@@ -106,6 +106,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     //       console.log("Signed URL generated successfully.");
     //       return NextResponse.json({ signedUrl });
     //     }
+    
     await uploadEducationalPdf({
       orderId,
       fileName,

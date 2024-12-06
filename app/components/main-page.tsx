@@ -1,28 +1,7 @@
 "use client";
 
-import { graphql } from "@/lib/gql";
 import { Button, Card, Divider, Link, Page, Text } from "@shopify/polaris";
 import { useEffect, useState } from "react";
-
-interface Data {
-  name: string;
-  height: string;
-}
-
-const GET_SHOP = graphql(`
-  #graphql
-  query getShop {
-    shop {
-      name
-    }
-  }
-`);
-
-interface ShopData {
-  shop: {
-    name: string;
-  };
-}
 
 interface Order {
   orderId: string;
@@ -30,6 +9,7 @@ interface Order {
   fileType: string;
   fileUrl: string;
   createdAt: string;
+  orderNumber?: string;
 }
 
 interface Pagination {
@@ -40,12 +20,12 @@ interface Pagination {
 }
 
 export default function Home({ shop }: { shop: string }) {
+  console.log(shop, "shop******************");
   const [orders, setOrders] = useState<Order[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState<number>(1); // State for current page
   const [limit, setLimit] = useState<number>(10);
-
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const fetchOrders = async (pageNo: number, limit: number) => {
@@ -53,7 +33,7 @@ export default function Home({ shop }: { shop: string }) {
     try {
       console.log("Calling API");
       const response = await fetch(
-        `/api/orderListing?pageNo=${pageNo}&limit=${limit}`,
+        `/api/orderListing?pageNo=${pageNo}&limit=${limit}&shopName=${shop}`,
       );
       const result = (await response.json()) as any;
       // console.log(result, "result afasdsddds****************");
@@ -109,6 +89,9 @@ export default function Home({ shop }: { shop: string }) {
               <thead>
                 <tr>
                   <th style={{ padding: "12px", textAlign: "left" }}>
+                    Order Number
+                  </th>
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Order ID
                   </th>
                   <th style={{ padding: "12px", textAlign: "left" }}>
@@ -124,18 +107,22 @@ export default function Home({ shop }: { shop: string }) {
                 </tr>
               </thead>
               <tbody>
-              {(orders?.map((order) => (
+                {orders?.map((order) => (
                   <tr key={order.orderId}>
+                    <td style={{ padding: "12px" }}>
+                      {order?.orderNumber || ""}
+                    </td>
+
                     <td style={{ padding: "12px" }}>{order?.orderId}</td>
                     <td style={{ padding: "12px" }}>{order?.fileName}</td>
                     <td style={{ padding: "12px" }}>{order?.fileType}</td>
                     <td style={{ padding: "12px" }}>
-                    {new Date(order?.createdAt).toLocaleString("en-US", {
+                      {new Date(order?.createdAt).toLocaleString("en-US", {
                         timeZone: userTimeZone, // Use the user's time zone
                         // weekday: 'long', // Day of the week
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
                         // hour: '2-digit',
                         // minute: '2-digit',
                         // second: '2-digit',
@@ -145,7 +132,11 @@ export default function Home({ shop }: { shop: string }) {
                       <Link url={order?.fileUrl}>View</Link>
                     </td>
                   </tr>
-               ))) || <tr><td colSpan={2}>No orders available</td></tr>}
+                )) || (
+                  <tr>
+                    <td colSpan={2}>No orders available</td>
+                  </tr>
+                )}
               </tbody>
             </table>
             <Divider />

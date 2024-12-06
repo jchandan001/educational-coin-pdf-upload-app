@@ -21,6 +21,7 @@ export async function saveOrderDetails(orderPayload) {
         },
         data: {
           orderId: orderPayload?.orderId,
+          orderNumber:orderPayload?.orderNumber,
           confirmationNumber: orderPayload?.confirmationNumber,
           shopName: orderPayload?.shopName,
           lines: JSON.stringify(orderPayload?.lines),
@@ -42,6 +43,7 @@ export async function saveOrderDetails(orderPayload) {
         data: {
           orderId: orderPayload?.orderId,
           shopName: orderPayload?.shopName,
+          orderNumber:orderPayload?.orderNumber,
           confirmationNumber: orderPayload?.confirmationNumber,
           lines: JSON.stringify(orderPayload?.lines),
           subTotalAmount: orderPayload?.subTotalAmount,

@@ -4,22 +4,33 @@ import { getAllOrderDetails } from "../../../services/educational"; // Adjust im
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("Received request to fetch all orders.",request.url);
+    console.log("Received request to fetch all orders.", request.url);
     const url = new URL(request.url);
-    console.log("Received request to fetch all orders.",url);
-    const page = parseInt(url.searchParams.get('pageNo') || '1', 10);
-    const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+    console.log("Received request to fetch all orders.", url);
+    const page = parseInt(url.searchParams.get("pageNo") || "1", 10);
+    const limit = parseInt(url.searchParams.get("limit") || "10", 10);
+    const shopName = url.searchParams.get("shopName");
 
-    console.log(`Received request to fetch all orders, page: ${page}, limit: ${limit}.`);
+    if (!shopName) {
+      console.log("shopName is required.")
+      return NextResponse.json(
+        { message: "Required params missing." },
+        { status: 400 },
+      );
+    }
+
+    console.log(
+      `Received request to fetch all orders, page: ${page}, limit: ${limit}.`,
+    );
     // Fetch all orders using your service function
-    const allOrders = await getAllOrderDetails(page, limit);
+    const allOrders = await getAllOrderDetails(shopName,page, limit);
 
-    console.log("Fetched orders successfully:", allOrders);
+    // console.log("Fetched orders successfully:", allOrders);
 
     // Respond with all orders
     return NextResponse.json(
       { data: allOrders, message: "Orders fetched successfully." },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching orders:", error?.message);
@@ -27,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       { message: "Error fetching order details." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

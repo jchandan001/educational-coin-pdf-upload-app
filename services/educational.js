@@ -18,6 +18,12 @@ export async function uploadEducationalPdf({
     // First, check if the record exists by orderId
     const id = new ObjectId().toString();
 
+    const checkOrderExistOrNot = await prisma.orderDetails.findFirst({
+      where: { orderId: String(orderId) },
+    });
+
+    console.log(checkOrderExistOrNot,'check order exist****************')
+
     const existingPdf = await prisma.educationalPdfUpload.findFirst({
       where: { orderId: String(orderId) },
     });
@@ -31,6 +37,8 @@ export async function uploadEducationalPdf({
           fileName,
           fileType: fileType || "application/pdf",
           fileUrl,
+          orderNumber:checkOrderExistOrNot?.orderNumber,
+          shopName:checkOrderExistOrNot?.shopName
         },
       });
       console.log("PDF Updated:", updatedPdf);
@@ -43,6 +51,8 @@ export async function uploadEducationalPdf({
           fileName,
           fileType: fileType || "application/pdf",
           fileUrl,
+          orderNumber:checkOrderExistOrNot?.orderNumber,
+          shopName:checkOrderExistOrNot?.shopName
         },
       });
       console.log("PDF Created:", newPdf);
@@ -54,7 +64,7 @@ export async function uploadEducationalPdf({
   }
 }
 
-export async function getAllOrderDetails(page = 1, limit = 10) {
+export async function getAllOrderDetails(shopName,page = 1, limit = 10) {
   try {
     console.log(`Fetching orders for page ${page} with limit ${limit}.`);
 
@@ -63,6 +73,9 @@ export async function getAllOrderDetails(page = 1, limit = 10) {
 
     // Query the database to fetch orders with pagination
     const orders = await prisma.educationalPdfUpload.findMany({
+      where: {
+        shopName, 
+      },
       skip: offset,
       take: limit, 
       orderBy: {

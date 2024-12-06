@@ -35,15 +35,16 @@ function Attribution() {
   } = orderDetails;
 
   console.log("orderConfirmation", orderDetails);
-  console.log("deliveryGroups", deliveryGroups);
-  console.log("deliveryGroups current", deliveryGroups?.current);
-  console.log(
-    "deliveryGroups deliveryOptions",
-    deliveryGroups?.current[0]?.deliveryOptions,
-  );
+  // console.log("deliveryGroups", deliveryGroups);
+  // console.log("deliveryGroups current", deliveryGroups?.current);
+  // console.log(
+  //   "deliveryGroups deliveryOptions",
+  //   deliveryGroups?.current[0]?.deliveryOptions,
+  // );
 
   const orderId = orderConfirmation?.current?.order?.id?.split("/").pop();
-  const confirmationNumber = orderConfirmation?.current?.number
+  const confirmationNumber = orderConfirmation?.current?.number;
+
   const orderPayload = {
     orderId,
     confirmationNumber,
@@ -70,7 +71,7 @@ function Attribution() {
       option.title === "Dropship / Blind Ship" && option.type === "shipping",
   );
 
-  console.log(shouldShowSurvey, "shouldShowSurvey");
+  // console.log(shouldShowSurvey, "shouldShowSurvey");
 
   async function handleSubmit() {
     setLoading(true);
@@ -107,13 +108,12 @@ function Attribution() {
     attributionSubmitted.data === true ||
     !shouldShowSurvey
   ) {
-    console.log(!shouldShowSurvey, "!shouldShowSurvey not showing");
+    // console.log(!shouldShowSurvey, "!shouldShowSurvey not showing");
     return null;
   }
 
   return (
     <Survey
-      // file={file}
       orderId={orderId}
       title="Attach Shipping Label file with your order?"
       onSubmit={handleSubmit}

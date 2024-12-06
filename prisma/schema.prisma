@@ -58,6 +58,8 @@ model EducationalPdfUpload {
   fileName  String
   fileType  String
   fileUrl   String
+  orderNumber String?
+  shopName   String?
   createdAt  DateTime @default(now())
   uploadedAt DateTime @default(now())
 }
@@ -67,6 +69,7 @@ model OrderDetails {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   orderId               String
   shopName              String
+  orderNumber           String?
   confirmationNumber    String?
   lines                 Json
   subTotalAmount        Json
