@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "../../../lib/db/prisma-connect";
+
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 // Initialize S3 client
@@ -11,7 +13,7 @@ const s3Client = new S3Client({
 });
 import { uploadEducationalPdf } from "../../../services/educational";
 console.log("S3 client initialized");
-
+import { updateOrderNotesById } from "@/shopifyApi/orderApi";
 async function uploadImageToS3(
   file: Buffer,
   fileName: string,
@@ -102,16 +104,26 @@ export async function POST(request: NextRequest, response: NextResponse) {
       mimeType,
     );
     console.log("File uploaded with name:", fileName, fileUrl);
-    //     if (signedUrl) {
-    //       console.log("Signed URL generated successfully.");
-    //       return NextResponse.json({ signedUrl });
-    //     }
-    
+
+    const checkOrderExistOrNot = await prisma.orderDetails.findFirst({
+      where: { orderId: String(orderId) },
+    });
+
+    if (!checkOrderExistOrNot) {
+      return NextResponse.json({ error: "Order not found." }, { status: 400 });
+    }
+
+    const { shopName,orderNumber } = checkOrderExistOrNot;
+    console.log(checkOrderExistOrNot, "check order exist****************");
+    await updateOrderNotesById(shopName, orderId, fileUrl);
+
     await uploadEducationalPdf({
       orderId,
       fileName,
       fileType: mimeType,
       fileUrl,
+      shopName,
+      orderNumber
     });
     return NextResponse.json({ success: true, fileName });
   } catch (error) {

@@ -59,7 +59,7 @@
 
           // document.getElementById("shipping-name").textContent = "Shipping";
           document.getElementById("customer-name").textContent =
-          `${data?.shippingAddress?.firstName}  ${data?.shippingAddress?.lastName}`;
+          `${data?.shippingAddress?.firstName || ""}  ${data?.shippingAddress?.lastName || ""}`;
           document.getElementById("shipping-address").textContent =
             `${data?.shippingAddress?.city}, ${data?.shippingAddress.provinceCode}, ${data?.shippingAddress?.countryCode}`;
           document.getElementById("customer-email").textContent =
